@@ -44,6 +44,7 @@ namespace ModBus {
 						nByteAdr = i / 8;
 						_bInputs[i] = (pData[1 + nByteAdr] & (0x01 << nBitAdr)) == 0 ? false : true;
 					}
+					_OnDataUpdated();
 				}
 			}
 		}

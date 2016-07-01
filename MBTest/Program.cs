@@ -85,6 +85,11 @@ namespace MBSerialTest {
 			_writeC = new MBCommandWriteMultipleCoils(sMBControlName) { StartAdr = 0, Quantity = 8 };
 			_readDI = new MBCommandReadDiscreteInput(sMBControlName) { StartAdr = 0, Quantity = 8 };
 
+			_readC.OnDataUpdated += _readC_OnDataUpdated;
+			_readDI.OnDataUpdated += _readDI_OnDataUpdated;
+			_readHR.OnDataUpdated += _readHR_OnDataUpdated;
+			_readIR.OnDataUpdated += _readIR_OnDataUpdated;
+
 			//send some data
 			short[] shData = new short[1] { 0 };
 			bool[] bCoils = new bool[8] { true, false, true, false, true, false, true, false };
@@ -105,10 +110,6 @@ namespace MBSerialTest {
 
 					Thread.Sleep((_type == CommType.Serial) ? 900 : 300);
 
-					DebugOut("HR: " + String.Join(", ", _readHR.Registers));
-					DebugOut("IR: " + String.Join(", ", _readIR.Registers));
-					DebugOut("C : " + String.Join(", ", _readC.Coils));
-					DebugOut("DI: " + String.Join(", ", _readDI.DiscInputs));
 					DebugOut("Bf: " + _mb.BufferLoad.ToString("000.0") + "%");
 					
 				}
@@ -117,9 +118,7 @@ namespace MBSerialTest {
 			}
 		}
 
-		static void _mb_OnError(string sError) {
-			Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + ": Error = " + sError);
-		}
+		
 
 		static void SendDataEvent(byte[] pData) {
 			PrintData(pData, "Send: ");
@@ -134,6 +133,11 @@ namespace MBSerialTest {
 			_mb.OnDataRecieved(pData);		
 		}
 
+		static void _readIR_OnDataUpdated() { DebugOut("IR: " + String.Join(", ", _readIR.Registers)); }
+		static void _readHR_OnDataUpdated() { DebugOut("HR: " + String.Join(", ", _readHR.Registers)); }
+		static void _readDI_OnDataUpdated() { DebugOut("DI: " + String.Join(", ", _readDI.DiscInputs)); }
+		static void _readC_OnDataUpdated() { DebugOut("C : " + String.Join(", ", _readC.Coils)); }
+		static void _mb_OnError(string sError) { Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + ": Error = " + sError); }
 		static void Disconnected() { Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + ": Disconnected"); }
 		static void Connected() { Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + ": Connected"); }
 	}

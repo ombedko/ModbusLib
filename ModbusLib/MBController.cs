@@ -9,7 +9,7 @@ namespace ModBus {
 
 	public delegate void SendDataEvent(byte[] pData);
 	public delegate void ErrorEvent(string sError);
-
+	public delegate void DataUpdated();
 
 	class MBMsgCmdItem {
 		#region attributes
@@ -93,7 +93,10 @@ namespace ModBus {
 			_nTransactionID = 1;					//initial transaction ID
 			Timeout = 1000;							//default timeout
 			IsRTU = false;							//default to TCP mode
-			_lstControllers.Add(sName, this);		//add to static list of controllers on creation
+			if(_lstControllers.ContainsKey(sName))
+				_lstControllers[sName] = this;
+			else
+				_lstControllers.Add(sName, this);		//add to static list of controllers on creation
 		}
 		/*
 		public MBController()
@@ -194,12 +197,14 @@ namespace ModBus {
 		/// Start worker thread, internal function only. Called from static fuinction Start()
 		/// </summary>
 		public void Start() {
-			if(OnSendData == null)
-				throw new Exception("No event handler for OnSendData defined");
-			//create thread object			
-			_bRun = true;
-			_threadRun = new Thread(_Run);
-			_threadRun.Start();
+			if(!_bRun) {
+				if(OnSendData == null)
+					throw new Exception("No event handler for OnSendData defined");
+				//create thread object			
+				_bRun = true;
+				_threadRun = new Thread(_Run);
+				_threadRun.Start();
+			}
 		}
 
 		/// <summary>

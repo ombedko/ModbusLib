@@ -5,7 +5,8 @@ using System.Text;
 
 namespace ModBus {
 	public class MBCommand {
-		
+		public event DataUpdated OnDataUpdated;
+
 		protected int _nStartAdr = 0;
 		protected int _nQuantity = 2;
 		protected MBController _control;
@@ -29,7 +30,12 @@ namespace ModBus {
 		}
 	*/
 		public virtual void HandleMsg(MBMsg msg) {			
-		}		
+		}
+
+		protected void _OnDataUpdated() {
+			if(OnDataUpdated != null)
+				OnDataUpdated();
+		}
 
 		protected void _QueMsg(byte nUnitID, MBFunctionType nFuncID, byte[] pMsgData) {
 			_control.QueMsg(nUnitID, nFuncID, pMsgData, this);

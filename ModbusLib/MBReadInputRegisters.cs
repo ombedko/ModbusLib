@@ -39,6 +39,7 @@ namespace ModBus {
 					for(int i = 0; i < _nQuantity; i++) {
 						_nRegisters[i] = MBMsg.GetShortFromByteSwappedBuffer(pData, 1 + i * 2);
 					}
+					_OnDataUpdated();
 				}
 			}
 		}
